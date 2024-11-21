@@ -16,16 +16,12 @@ METRIC_FIELDS = [
     'val.encoder_mse',
     'val.decoder_loss',
     'val.decoder_acc',
-    'val.cover_score',
-    'val.generated_score',
     'val.ssim',
     'val.psnr',
     'val.bpp',
     'train.encoder_mse',
     'train.decoder_loss',
     'train.decoder_acc',
-    'train.cover_score',
-    'train.generated_score',
 ]
 
 
@@ -96,7 +92,7 @@ class FIS(object):
         N, _, H, W = cover.size()
         return torch.zeros((N, self.data_depth, H, W), device=self.device).random_(0, 2)
 
-    def _encode_decode(self, cover, epoch=-10, quantize=False, payload=None, init_noise=False, verbose=False):
+    def _encode_decode(self, cover, epoch=-10, quantize=False, payload=None, verbose=False):
         if payload is None:
             payload = self._random_data(cover)
         generated = self.encoder(cover, payload, epoch, verbose=verbose)
@@ -152,14 +148,9 @@ class FIS(object):
                 generated, payload, decoded = self._encode_decode(cover, quantize=True)
             encoder_mse, decoder_loss, decoder_acc = self._coding_scores(cover, generated, payload, decoded)
 
-            generated_score = torch.tensor(0)
-            cover_score = torch.tensor(0)
-
             metrics['val.encoder_mse'].append(encoder_mse.item())
             metrics['val.decoder_loss'].append(decoder_loss.item())
             metrics['val.decoder_acc'].append(decoder_acc.item())
-            metrics['val.cover_score'].append(cover_score.item())
-            metrics['val.generated_score'].append(generated_score.item())
             metrics['val.ssim'].append(
                 np.mean([
                     calc_ssim(
@@ -184,7 +175,6 @@ class FIS(object):
         self.decoder_optimizer = self._get_optimizers()
         self.epochs = 0
 
-        # Start training
         total = self.epochs + epochs
         for epoch in range(self.epochs + 1, epochs + 1):
 
