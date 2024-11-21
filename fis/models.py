@@ -65,8 +65,6 @@ class FIS(object):
 
         self.encoder.to(self.device)
         self.decoder.to(self.device)
-        if not self.no_critic:
-            self.critic.to(self.device)
 
     def __init__(self, data_depth, encoder, decoder, lr=1e-4, opt="adam",
                  cuda=True, verbose=True, extra_verbose=True, **kwargs):
