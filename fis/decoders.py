@@ -12,7 +12,7 @@ class BasicDecoder(nn.Module):
             padding=1
         )
 
-    def _build_branch1(self):
+    def _build(self):
         self.conv1 = nn.Sequential(
             self._conv2d(3, self.hidden_size),
             nn.LeakyReLU(inplace=True),
@@ -37,20 +37,28 @@ class BasicDecoder(nn.Module):
         super().__init__()
         self.data_depth = data_depth
         self.hidden_size = hidden_size
-        self._branch1 = self._build_branch1()
+        self._net = self._build()
 
-
-    def forward(self, x):
-        x = self._branch1[0](x)
+    def forward(self, x, private_key=11111):
+        x = self._net[0](x)
         x_list = []
         
-        x = self._branch1[1](x)#torch.cat(x_list, dim=1))
+        x = self._net[1](x)
         x_list.append(x)
 
-        x = self._branch1[2](torch.cat(x_list, dim=1))
+        x = self._net[2](torch.cat(x_list, dim=1))
         x_list.append(x)
         
-        x = self._branch1[3](torch.cat(x_list, dim=1))
+        x = self._net[3](torch.cat(x_list, dim=1))
 
+        m = self.secure(x, private_key) - 0.5
+
+        x = torch.mul(x, m//torch.abs(m))
+        
         return x
 
+    def secure(self, x, private_key):
+        torch.manual_seed(private_key)
+        m = torch.rand_like(x)
+
+        return m

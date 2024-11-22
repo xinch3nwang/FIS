@@ -62,16 +62,15 @@ class FIS(object):
         self.encoder.to(self.device)
         self.decoder.to(self.device)
 
-    def __init__(self, data_depth, encoder, decoder, lr=1e-4, opt="adam",
+    def __init__(self, data_depth, encoder, decoder, lr=1e-4, opt="adam", private_key=11111, 
                  cuda=True, verbose=True, extra_verbose=True, **kwargs):
 
         self.verbose = verbose
         self.extra_verbose = extra_verbose
         self.lr = lr
         self.opt = opt
-
+        self.private_key = private_key
         self.data_depth = data_depth
-
         print("data_depth", self.data_depth)
         kwargs['data_depth'] = data_depth
         self.decoder = self._get_instance(decoder, kwargs)
@@ -86,13 +85,13 @@ class FIS(object):
         self.history = list()
 
     def _decoder(self, x):
-        return self.decoder(x)
+        return self.decoder(x, self.private_key)
 
     def _random_data(self, cover):
         N, _, H, W = cover.size()
         return torch.zeros((N, self.data_depth, H, W), device=self.device).random_(0, 2)
 
-    def _encode_decode(self, cover, epoch=-10, quantize=False, payload=None, verbose=False):
+    def _encode_decode(self, cover, epoch=-10, quantize=False, payload=None, verbose=False, key=11111):
         if payload is None:
             payload = self._random_data(cover)
         generated = self.encoder(cover, payload, epoch, verbose=verbose)
