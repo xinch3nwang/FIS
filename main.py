@@ -19,11 +19,9 @@ warnings.filterwarnings("ignore",category=UserWarning)
 
 
 parser = argparse.ArgumentParser("Frequency-Guided Iterative Network for Image Steganography")
-# task
+
 parser.add_argument("--dataset", type=str, default="div2k", choices=["div2k", "mscoco", "celeba"])
 parser.add_argument("--bits", type=int, default=1)
-
-# training
 parser.add_argument("--seed", type=int, default=2024)
 parser.add_argument("--batch-size", type=int, default=2)
 parser.add_argument("--epochs", type=int, default=30)
@@ -31,23 +29,14 @@ parser.add_argument("--random-crop", type=int, default=360)
 parser.add_argument("--lr", type=float, default=1e-4)
 parser.add_argument("--opt", type=str, choices=["adam", "sgd"], default="adam")
 parser.add_argument("--limit", type=int, default=800, help="number of training images")
-
-# architecture
 parser.add_argument("--hidden-size", type=int, default=32)
-parser.add_argument("--dense-decoder", action="store_true")
-
-# FIS
+parser.add_argument("--private-key", type=int, default=11111)
 parser.add_argument("--mse-weight", type=float, default=1.0)
 parser.add_argument("--step-size", type=float, default=1.0)
 parser.add_argument("--iters", type=int, default=12)
-
-# inference
 parser.add_argument("--load", type=str, default=None)
 parser.add_argument("--test-step-size", type=float, default=0.1)
 parser.add_argument("--test-iters", type=int, default=150)
-
-
-# evaluation
 parser.add_argument("--eval", action="store_true")
 parser.add_argument("--constraint", type=float, default=None)
 
@@ -64,7 +53,7 @@ if __name__ == "__main__":
     print(save_dir)
 
     if args.eval and args.load is None:
-        args.load = os.path.join(save_dir, "checkpoints", "best.steg")  # Use the best checkpoint if it exists.
+        args.load = os.path.join(save_dir, "checkpoints", "best.steg")
         if not os.path.isfile(args.load):
             print("Using the latest checkpoint instead of the best.")
             args.load = os.path.join(save_dir, "checkpoints", "latest.steg")
@@ -81,6 +70,7 @@ if __name__ == "__main__":
             iters=args.iters,
             lr=args.lr,
             opt=args.opt,
+            private_key=args.private_key,
         )
 
     if args.eval:
@@ -132,7 +122,6 @@ if __name__ == "__main__":
             steps.append(best_idx)
             errors.append(_errors[best_idx])
 
-            # save the best output and reload from disk
             generated = to_np_img(generated[best_idx][0])
             imwrite(os.path.join(out_folder, f"{img_names[i]}.png"), generated)
 
