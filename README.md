@@ -24,6 +24,9 @@ python main.py --eval --bits 2 --dataset div2k --load checkpoints/div2k/2_bits.s
 ```
 
 
+## Running Example
+This is the running example of my project.
+![example.png](example.png)
 
 
 ## Acknowledgements
