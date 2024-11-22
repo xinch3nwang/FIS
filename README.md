@@ -32,3 +32,4 @@ This is the running example of my project.
 ## Acknowledgements
 - [LISO](https://github.com/cxy1997/LISO)
 - [CBAM](https://github.com/Jongchan/attention-module)
+- [TrajGRU](https://github.com/FunnyEngineer/TrajGRU)
