@@ -33,3 +33,4 @@ This is the running example of my project.
 - [LISO](https://github.com/cxy1997/LISO)
 - [CBAM](https://github.com/Jongchan/attention-module)
 - [TrajGRU](https://github.com/FunnyEngineer/TrajGRU)
+- [Extensive Reading During Research](https://xinch3nwang.github.io/extensive%20reading.html)
